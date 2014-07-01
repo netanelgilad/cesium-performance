@@ -12,8 +12,8 @@ define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, m
       var viewer = new Cesium.CesiumWidget('cesiumContainer', {
           sceneMode : Cesium.SceneMode.SCENE2D,
           baseLayerPicker : false,
-          imageryProvider : new Cesium.ArcGisMapServerImageryProvider({
-              url : 'http://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer'
+          imageryProvider : new Cesium.TileMapServiceImageryProvider({
+              url : 'tiles/'
           })
       });
 
@@ -126,8 +126,6 @@ define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, m
 
 
           var billboards = new Cesium.BillboardCollection();
-          var plots = new Cesium.BillboardCollection();
-          viewer.scene.primitives.add(plots);
           var billarray = [];
           var firstBil;
 
@@ -149,12 +147,27 @@ define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, m
                       imageIndex : 0
                   });
                   billarray.push(firstBil);
-                  scene.primitives.add(billboards);
+                 scene.primitives.add(billboards);
               };
               image.src = '/cesium-performance/app/images/satellite.png';
           }
 
           addBillboard(viewer.scene);
+
+          var texts = [
+              'sadfsfds',
+              'xczxcxcc',
+              'werwerew'
+          ];
+
+          var currText = 0;
+          function nextText() {
+              if (currText == texts.length) {
+                  currText = 0;
+              }
+
+              return texts[currText++];
+          }
 
           for (var i = 0; i < 5000; i++) {
               var pos = Cesium.Cartesian3.fromDegrees(-120 + Math.random() * 240,-70 + Math.random() * 140);
@@ -165,7 +178,7 @@ define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, m
 
               lblArray.push(labels.add({
                   position : pos,
-                  text : randomString(),
+                  text : nextText(),
                   scale : 0.5
               }));
           };
@@ -173,10 +186,7 @@ define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, m
           viewer.scene.primitives.add(labels);
 
 
-
-
       setInterval(function() {
-          var stime = new Date();
 
           for (var i = 0; i < 5000; i++) {
               var carto = viewer.scene.globe.ellipsoid.cartesianToCartographic(billboards.get(i).position);
@@ -191,30 +201,94 @@ define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, m
               billboards.get(i).position = Cesium.Cartesian3.fromDegrees(x, y);
               labels.get(i).position = Cesium.Cartesian3.fromDegrees(x, y)
           }
-          //console.log("for: " + (new Date() - stime));
-          //stime = new Date();
-          console.log("process: " + (new Date() - stime));
       }, 16);
-
-
-          function randomString()
-          {
-              var text = "";
-              var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-              for( var i=0; i < 5; i++ )
-                  text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-              return text;
-          }
 
 //          setInterval(function() {
 //
 //                lblArray.forEach(function(value) {
-//                    value.text = randomString();
+//                    value.text = nextText();
 //                });
 //
 //          }, 500);
+
+        var appreances = [];
+          for (var i = 0; i < 20; i++) {
+              var appreance = new Cesium.EllipsoidSurfaceAppearance({
+                    material : Cesium.Material.fromType('Color')
+              });
+
+              appreance.material.uniforms.color = new Cesium.Color((1 / 20) * i, 0.0, 0.0, 1.0);
+              appreances.push(appreance);
+          }
+
+          var currAppearance = 0;
+          function nextAppearance() {
+              if (currAppearance == appreances.length) {
+                  currAppearance = 0;
+              }
+
+              return appreances[currAppearance++];
+          }
+
+
+          var currPrim = 0;
+
+          var primitives = new Cesium.PrimitiveCollection();
+          viewer.scene.primitives.add(primitives);
+
+
+
+        setInterval(function() {
+            var circles = []
+            billarray.forEach(function (value) {
+
+                function toDegrees (angle) {
+                    return angle * (180 / Math.PI);
+                }
+
+                var pos = viewer.scene.globe.ellipsoid.cartesianToCartographic(value.position);
+                var long = toDegrees(pos.longitude);
+                var lat = toDegrees(pos.latitude);
+                circles.push(new Cesium.GeometryInstance({
+                    geometry : new Cesium.RectangleGeometry({
+                        rectangle : Cesium.Rectangle.fromDegrees(long - 0.1, lat - 0.1, long + 0.1, lat + 0.1)
+                    })
+                }));
+
+
+            });
+
+            var stime = new Date();
+            var prim = new Cesium.Primitive({
+                geometryInstances : circles,
+                appearance : nextAppearance(),
+                asynchronous : false
+            });
+
+            primitives.add(prim);
+            console.log('time: ' + (new Date() - stime));
+
+
+            if (currPrim >= 20) {
+                primitives.remove(primitives.get(0));
+            }
+            else {
+                currPrim++;
+            }
+
+        }, 500);
+
+
+
+
+          setInterval(function() {
+            var first = appreances[0].material.uniforms.color;
+              for (var i = 0; i < appreances.length - 1; i++) {
+                  appreances[i].material.uniforms.color = appreances[i+1].material.uniforms.color;
+              }
+              appreances[appreances.length - 1].material.uniforms.color = first;
+          }, 100);
+
 
     });
 
