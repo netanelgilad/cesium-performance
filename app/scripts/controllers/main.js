@@ -1,4 +1,4 @@
-define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, myces) {
+define(['angular', 'Cesium'], function (angular, myces) {
   'use strict';
 
   angular.module('cesiumPerformanceApp.controllers.MainCtrl', [])
