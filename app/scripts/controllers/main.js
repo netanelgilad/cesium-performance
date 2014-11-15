@@ -96,7 +96,7 @@ define(['angular', '../../bower_components/Cesium/Cesium'], function (angular, m
       var currentStart = 0;
       setInterval(function () {
         for (var i = 0; i < 20; i++) {
-          plotColls[i].color = new Cesium.Color((1 / 20) * ((i + currentStart) % 20), 0.0, 0.0, 1.0);
+          plotColls[19 - i].color = new Cesium.Color((1 / 20) * ((i + currentStart) % 20), 0.0, 0.0, 1.0);
         }
         currentStart++;
       }, 100);

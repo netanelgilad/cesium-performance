@@ -1,22 +1,38 @@
 /*jshint unused: vars */
 require.config({
   paths: {
-    'angular' : '../bower_components/angular/angular',
-     'angular-route' : '../bower_components/angular-route/angular-route',
-      'angular-resource' : '../bower_components/angular-resource/angular-resource',
-      'angular-cookies' : '../bower_components/angular-cookies/angular-cookies',
-      'angular-sanitize' : '../bower_components/angular-sanitize/angular-sanitize',
-      'Cesium' : "../bower_components/Cesium/Cesium"
+    angular: '../bower_components/angular/angular',
+    'angular-route': '../bower_components/angular-route/angular-route',
+    'angular-resource': '../bower_components/angular-resource/angular-resource',
+    'angular-cookies': '../bower_components/angular-cookies/angular-cookies',
+    'angular-sanitize': '../bower_components/angular-sanitize/angular-sanitize',
+    Cesium: '../Cesium/Cesium',
+    jquery: '../bower_components/jquery/dist/jquery',
+    bootstrap: '../bower_components/bootstrap/dist/js/bootstrap',
+    'angular-scenario': '../bower_components/angular-scenario/angular-scenario',
+    'angular-mocks': '../bower_components/angular-mocks/angular-mocks'
   },
   shim: {
-    'angular' : {'exports' : 'angular'},
-    'angular-route': ['angular'],
-    'angular-cookies': ['angular'],
-    'angular-sanitize': ['angular'],
-    'angular-resource': ['angular'],
+    angular: {
+      exports: 'angular'
+    },
+    'angular-route': [
+      'angular'
+    ],
+    'angular-cookies': [
+      'angular'
+    ],
+    'angular-sanitize': [
+      'angular'
+    ],
+    'angular-resource': [
+      'angular'
+    ],
     'angular-mocks': {
-      deps:['angular'],
-      'exports':'angular.mock'
+      deps: [
+        'angular'
+      ],
+      exports: 'angular.mock'
     }
   },
   priority: [
